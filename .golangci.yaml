@@ -1,0 +1,46 @@
+---
+run:
+  modules-download-mode: readonly
+linters:
+  enable-all: true
+  disable:
+    # deprecated
+    - deadcode
+    - exhaustivestruct
+    - golint
+    - ifshort
+    - interfacer
+    - maligned
+    - nosnakecase
+    - scopelint
+    - structcheck
+    - varcheck
+    # disabled
+    - depguard
+    - dupl
+    - exhaustruct
+    - forbidigo
+    - nonamedreturns
+    - varnamelen
+    - wrapcheck
+    - wsl
+    # Go 1.22
+    - copyloopvar
+    - intrange
+linters-settings:
+  testifylint:
+    enable-all: true
+    disable:
+      - require-error
+  ireturn:
+    allow:
+      - error
+      - generic
+  predeclared:
+    ignore: "new"
+issues:
+  exclude-rules:
+    - path: _test\.go$
+      linters:
+        - revive
+      text: "dot-imports"
