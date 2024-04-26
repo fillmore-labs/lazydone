@@ -24,7 +24,7 @@ import (
 	"fillmore-labs.com/lazydone"
 )
 
-func TestUnsafeDone(t *testing.T) {
+func TestDone(t *testing.T) {
 	t.Parallel()
 
 	for i := 0; i < 1_000; i++ {
@@ -45,7 +45,7 @@ func TestUnsafeDone(t *testing.T) {
 	}
 }
 
-func TestUnsafeClosed(t *testing.T) {
+func TestClosed(t *testing.T) {
 	t.Parallel()
 	var lazy lazydone.Lazy
 	if lazy.Closed() {
@@ -67,4 +67,31 @@ func TestUnsafeClosed(t *testing.T) {
 	if !lazy.Closed() {
 		t.Error("Expected lazy to be closed after Close()")
 	}
+}
+
+func TestClosedConcurrency(t *testing.T) {
+	t.Parallel()
+
+	var wg sync.WaitGroup
+	for i := 0; i < 100; i++ {
+		var lazy lazydone.Lazy
+
+		wg.Add(3)
+		go func() {
+			<-lazy.Done()
+			wg.Done()
+		}()
+		go func() {
+			for !lazy.Closed() { //nolint:revive
+				// Spin, we want to hit the “select on closed channel” branch
+			}
+			wg.Done()
+		}()
+		go func() {
+			lazy.Close()
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
 }

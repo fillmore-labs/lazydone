@@ -27,8 +27,8 @@ type Lazy struct {
 
 // Close closes the done channel. You shouldn't close the channel twice.
 func (l *Lazy) Close() {
-	if ch := l.done.Swap(closedChan); ch != nil && ch != closedChan {
-		close(ch)
+	if done := l.done.Swap(closedChan); done != nil && done != closedChan {
+		close(done)
 	}
 }
 
@@ -48,15 +48,22 @@ func (l *Lazy) Done() <-chan struct{} {
 
 // Closed returns true if the done channel is closed.
 func (l *Lazy) Closed() bool {
-	if done := l.done.Load(); done != nil {
+	done := l.done.Load()
+	switch done {
+	case nil:
+		return false
+
+	case closedChan:
+		return true
+
+	default:
 		select {
 		case <-done:
 			return true
 		default:
+			return false
 		}
 	}
-
-	return false
 }
 
 func (l *Lazy) String() string {

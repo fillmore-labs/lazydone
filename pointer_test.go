@@ -24,7 +24,7 @@ import (
 	"fillmore-labs.com/lazydone"
 )
 
-func TestDone(t *testing.T) {
+func TestSafeDone(t *testing.T) {
 	t.Parallel()
 
 	for i := 0; i < 1_000; i++ {
@@ -45,7 +45,7 @@ func TestDone(t *testing.T) {
 	}
 }
 
-func TestClosed(t *testing.T) {
+func TestSafeClosed(t *testing.T) {
 	t.Parallel()
 	var lazy lazydone.SafeLazy
 	if lazy.Closed() {

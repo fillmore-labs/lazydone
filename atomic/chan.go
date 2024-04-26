@@ -32,27 +32,26 @@ type Chan[T any] struct {
 }
 
 // Load atomically loads and returns the value stored in c.
-func (c *Chan[T]) Load() chan T { return ptr2Ch[T](atomic.LoadPointer(&c.v)) }
+func (c *Chan[T]) Load() (ch chan T) {
+	*(*unsafe.Pointer)(unsafe.Pointer(&ch)) = atomic.LoadPointer(&c.v)
+
+	return
+}
 
 // Store atomically stores ch into c.
-func (c *Chan[T]) Store(ch chan T) { atomic.StorePointer(&c.v, ch2Ptr(ch)) }
+func (c *Chan[T]) Store(ch chan T) {
+	atomic.StorePointer(&c.v, *(*unsafe.Pointer)(unsafe.Pointer(&ch)))
+}
 
 // Swap atomically stores new into c and returns the previous value.
 func (c *Chan[T]) Swap(new chan T) (old chan T) {
-	return ptr2Ch[T](atomic.SwapPointer(&c.v, ch2Ptr(new)))
+	*(*unsafe.Pointer)(unsafe.Pointer(&old)) = atomic.SwapPointer(&c.v, *(*unsafe.Pointer)(unsafe.Pointer(&new)))
+
+	return
 }
 
 // CompareAndSwap executes the compare-and-swap operation for c.
 func (c *Chan[T]) CompareAndSwap(old, new chan T) (swapped bool) {
-	return atomic.CompareAndSwapPointer(&c.v, ch2Ptr(old), ch2Ptr(new))
-}
-
-// ch2Ptr casts from a channel to a pointer.
-func ch2Ptr[T any](ch chan T) unsafe.Pointer {
-	return *(*unsafe.Pointer)(unsafe.Pointer(&ch))
-}
-
-// ptr2Ch casts from a pointer to a channel.
-func ptr2Ch[T any](ptr unsafe.Pointer) chan T {
-	return *(*chan T)(unsafe.Pointer(&ptr))
+	return atomic.CompareAndSwapPointer(&c.v,
+		*(*unsafe.Pointer)(unsafe.Pointer(&old)), *(*unsafe.Pointer)(unsafe.Pointer(&new)))
 }
