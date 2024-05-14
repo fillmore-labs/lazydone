@@ -43,15 +43,15 @@ func (c *Chan[T]) Store(ch chan T) {
 	atomic.StorePointer(&c.v, *(*unsafe.Pointer)(unsafe.Pointer(&ch)))
 }
 
-// Swap atomically stores new into c and returns the previous value.
-func (c *Chan[T]) Swap(new chan T) (old chan T) {
-	*(*unsafe.Pointer)(unsafe.Pointer(&old)) = atomic.SwapPointer(&c.v, *(*unsafe.Pointer)(unsafe.Pointer(&new)))
+// Swap atomically stores n into c and returns the previous value.
+func (c *Chan[T]) Swap(n chan T) (o chan T) {
+	*(*unsafe.Pointer)(unsafe.Pointer(&o)) = atomic.SwapPointer(&c.v, *(*unsafe.Pointer)(unsafe.Pointer(&n)))
 
 	return
 }
 
 // CompareAndSwap executes the compare-and-swap operation for c.
-func (c *Chan[T]) CompareAndSwap(old, new chan T) (swapped bool) {
+func (c *Chan[T]) CompareAndSwap(o, n chan T) (swapped bool) {
 	return atomic.CompareAndSwapPointer(&c.v,
-		*(*unsafe.Pointer)(unsafe.Pointer(&old)), *(*unsafe.Pointer)(unsafe.Pointer(&new)))
+		*(*unsafe.Pointer)(unsafe.Pointer(&o)), *(*unsafe.Pointer)(unsafe.Pointer(&n)))
 }
