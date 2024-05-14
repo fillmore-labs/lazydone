@@ -9,16 +9,18 @@ name: Test
       - main
 jobs:
   test:
-    strategy:
-      matrix:
-        go: ['1.22', '1.21']
     name: Test on Go ${{ matrix.go }}
-    runs-on: ubuntu-latest
     permissions:
       checks: write
       contents: read
       pull-requests: read
       statuses: write
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        go: ["1.22", "1.21"]
+    env:
+      GOTOOLCHAIN: local
     steps:
       - name: ✔ Check out
         uses: actions/checkout@v4
@@ -30,7 +32,7 @@ jobs:
       - name: 🧸 golangci-lint
         uses: golangci/golangci-lint-action@v4
         with:
-          version: v1.57.2
+          version: v1.59.1
       - name: 🔨 Test
         run: go test -race -coverprofile=cover.out ./...
       - name: 🧑🏻‍💻 codecov

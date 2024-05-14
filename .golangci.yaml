@@ -5,16 +5,8 @@ linters:
   enable-all: true
   disable:
     # deprecated
-    - deadcode
-    - exhaustivestruct
-    - golint
-    - ifshort
-    - interfacer
-    - maligned
-    - nosnakecase
-    - scopelint
-    - structcheck
-    - varcheck
+    - execinquery
+    - gomnd
     # disabled
     - depguard
     - dupl
