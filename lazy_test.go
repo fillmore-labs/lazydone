@@ -27,12 +27,12 @@ import (
 func TestDone(t *testing.T) {
 	t.Parallel()
 
-	for i := 0; i < 1_000; i++ {
+	for i := range 1_000 {
 		t.Run("run"+strconv.Itoa(i), func(t *testing.T) {
 			t.Parallel()
 			var lazy lazydone.Lazy
 			var wg sync.WaitGroup
-			for j := 0; j < 1_000; j++ {
+			for range 1_000 {
 				wg.Add(1)
 				go func() {
 					defer wg.Done()
@@ -73,7 +73,7 @@ func TestClosedConcurrency(t *testing.T) {
 	t.Parallel()
 
 	var wg sync.WaitGroup
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		var lazy lazydone.Lazy
 
 		wg.Add(3)

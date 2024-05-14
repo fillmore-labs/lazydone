@@ -34,22 +34,20 @@ func (l *Lazy) Close() {
 
 // Done returns the done channel.
 func (l *Lazy) Done() <-chan struct{} {
-	done := l.done.Load()
-	if done == nil {
-		if ch := make(chan struct{}); l.done.CompareAndSwap(nil, ch) {
-			done = ch
-		} else {
-			done = l.done.Load()
-		}
+	if done := l.done.Load(); done != nil {
+		return done
 	}
 
-	return done
+	if done := make(chan struct{}); l.done.CompareAndSwap(nil, done) {
+		return done
+	}
+
+	return l.done.Load()
 }
 
 // Closed returns true if the done channel is closed.
 func (l *Lazy) Closed() bool {
-	done := l.done.Load()
-	switch done {
+	switch done := l.done.Load(); done {
 	case nil:
 		return false
 

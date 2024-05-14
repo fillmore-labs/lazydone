@@ -29,36 +29,37 @@ type SafeLazy struct {
 
 // Close closes the done channel. You shouldn't close the channel twice.
 func (l *SafeLazy) Close() {
-	if ch := l.done.Swap(&closedChan); ch != nil && ch != &closedChan {
-		close(*ch)
+	if done := l.done.Swap(&closedChan); done != nil && *done != closedChan {
+		close(*done)
 	}
 }
 
 // Done returns the done channel.
 func (l *SafeLazy) Done() <-chan struct{} {
-	done := l.done.Load()
-	if done == nil {
-		if ch := make(chan struct{}); l.done.CompareAndSwap(nil, &ch) {
-			done = &ch
-		} else {
-			done = l.done.Load()
-		}
+	if done := l.done.Load(); done != nil {
+		return *done
 	}
 
-	return *done
+	if ch := make(chan struct{}); l.done.CompareAndSwap(nil, &ch) {
+		return ch
+	}
+
+	return *l.done.Load()
 }
 
 // Closed returns true if the done channel is closed.
 func (l *SafeLazy) Closed() bool {
-	if done := l.done.Load(); done != nil {
-		select {
-		case <-*done:
-			return true
-		default:
-		}
+	done := l.done.Load()
+	if done == nil {
+		return false
 	}
 
-	return false
+	select {
+	case <-*done:
+		return true
+	default:
+		return false
+	}
 }
 
 func (l *SafeLazy) String() string {
