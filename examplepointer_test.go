@@ -33,6 +33,7 @@ func ExampleSafeLazy() {
 
 	go func() {
 		time.Sleep(100 * time.Millisecond)
+
 		result.value = 42
 		result.Close() // The result is ready.
 	}()
@@ -62,6 +63,7 @@ func ExampleSafeLazy_Done() {
 
 	go func() {
 		time.Sleep(100 * time.Millisecond)
+
 		result.value = 42
 		result.Close() // The result is ready.
 	}()

@@ -30,15 +30,19 @@ func TestSafeDone(t *testing.T) {
 	for i := range 1_000 {
 		t.Run("run"+strconv.Itoa(i), func(t *testing.T) {
 			t.Parallel()
+
 			var lazy lazydone.SafeLazy
+
 			var wg sync.WaitGroup
 			for range 1_000 {
 				wg.Add(1)
+
 				go func() {
 					defer wg.Done()
 					<-lazy.Done()
 				}()
 			}
+
 			lazy.Close()
 			wg.Wait()
 		})
@@ -47,6 +51,7 @@ func TestSafeDone(t *testing.T) {
 
 func TestSafeClosed(t *testing.T) {
 	t.Parallel()
+
 	var lazy lazydone.SafeLazy
 	if lazy.Closed() {
 		t.Error("Expected null lazy not to be closed")

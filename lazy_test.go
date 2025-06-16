@@ -30,15 +30,19 @@ func TestDone(t *testing.T) {
 	for i := range 1_000 {
 		t.Run("run"+strconv.Itoa(i), func(t *testing.T) {
 			t.Parallel()
+
 			var lazy lazydone.Lazy
+
 			var wg sync.WaitGroup
 			for range 1_000 {
 				wg.Add(1)
+
 				go func() {
 					defer wg.Done()
 					<-lazy.Done()
 				}()
 			}
+
 			lazy.Close()
 			wg.Wait()
 		})
@@ -47,6 +51,7 @@ func TestDone(t *testing.T) {
 
 func TestClosed(t *testing.T) {
 	t.Parallel()
+
 	var lazy lazydone.Lazy
 	if lazy.Closed() {
 		t.Error("Expected null lazy not to be closed")
@@ -73,10 +78,12 @@ func TestClosedConcurrency(t *testing.T) {
 	t.Parallel()
 
 	var wg sync.WaitGroup
+
 	for range 100 {
 		var lazy lazydone.Lazy
 
 		wg.Add(3)
+
 		go func() {
 			<-lazy.Done()
 			wg.Done()
@@ -85,6 +92,7 @@ func TestClosedConcurrency(t *testing.T) {
 			for !lazy.Closed() { //nolint:revive
 				// Spin, we want to hit the “select on closed channel” branch
 			}
+
 			wg.Done()
 		}()
 		go func() {

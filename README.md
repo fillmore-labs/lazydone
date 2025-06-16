@@ -3,7 +3,6 @@
 [![Go Reference](https://pkg.go.dev/badge/fillmore-labs.com/lazydone.svg)](https://pkg.go.dev/fillmore-labs.com/lazydone)
 [![Test](https://github.com/fillmore-labs/lazydone/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/fillmore-labs/lazydone/actions/workflows/test.yml)
 [![Coverage](https://codecov.io/gh/fillmore-labs/lazydone/branch/main/graph/badge.svg?token=OWP7JMXHD2)](https://codecov.io/gh/fillmore-labs/lazydone)
-[![Maintainability](https://api.codeclimate.com/v1/badges/8e2d0c51b631c9c39a1f/maintainability)](https://codeclimate.com/github/fillmore-labs/lazydone/maintainability)
 [![Go Report Card](https://goreportcard.com/badge/fillmore-labs.com/lazydone)](https://goreportcard.com/report/fillmore-labs.com/lazydone)
 [![License](https://img.shields.io/github/license/fillmore-labs/lazydone)](https://www.apache.org/licenses/LICENSE-2.0)
 

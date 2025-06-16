@@ -1,12 +1,16 @@
 ---
+version: "2"
+
 run:
   modules-download-mode: readonly
+
+formatters:
+  enable:
+    - gofumpt
+
 linters:
-  enable-all: true
+  default: all
   disable:
-    # deprecated
-    - tenv
-    # disabled
     - depguard
     - dupl
     - exhaustruct
@@ -14,45 +18,79 @@ linters:
     - nonamedreturns
     - varnamelen
     - wrapcheck
-    - wsl
-linters-settings:
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment
-    settings:
-      shadow:
-        strict: true
-  testifylint:
-    enable-all: true
-    disable:
-      - require-error
-  ireturn:
-    allow:
-      - anon
-      - error
-      - empty
-      - stdlib
-      - generic
-  predeclared:
-    ignore: "new"
-issues:
-  exclude-rules:
-    - path: _test\.go$
-      linters:
-        - revive
-      text: "dot-imports"
-    - path: _test\.go$
-      linters:
-        - govet
-      text: "lostcancel"
-    - path: ^main\.go$
-      linters:
-        - gocheckcompilerdirectives
-      text: "go:debug"
-    - linters:
-        - govet
-      text: '^shadow: declaration of "(ctx|err|ok)" shadows declaration at line \d+$'
-    - linters:
-        - revive
-      text: "^redefines-builtin-id: redefinition of the built-in function new$"
+  settings:
+    cyclop:
+      max-complexity: 20
+    errcheck:
+      exclude-functions:
+        - (io/fs.File).Close
+    gocognit:
+      min-complexity: 30
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+      settings:
+        shadow:
+          strict: true
+    gosec:
+      excludes: ["G103"]
+    ireturn:
+      allow:
+        - anon
+        - error
+        - empty
+        - stdlib
+        - generic
+    mnd:
+      ignored-numbers: ["2", "3", "-1"]
+    predeclared:
+      ignore: ["new"]
+    revive:
+      rules:
+        - name: atomic
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+          exclude: ["TEST"]
+        - name: early-return
+          arguments:
+            - allow-jump: true
+        - name: empty-block
+        - name: error-naming
+        - name: error-return
+        - name: error-strings
+        - name: errorf
+        - name: exported
+        - name: file-header
+          arguments:
+            - "Copyright 2024 Oliver Eikemeier. All Rights Reserved."
+        - name: increment-decrement
+        - name: indent-error-flow
+        - name: range
+        - name: receiver-naming
+        - name: superfluous-else
+        - name: time-naming
+        - name: unexported-return
+        - name: unreachable-code
+        - name: unused-parameter
+        - name: var-declaration
+        - name: var-naming
+    testifylint:
+      enable-all: true
+      disable:
+        - require-error
+  exclusions:
+    rules:
+      - path: _test\.go$
+        linters:
+          - govet
+        text: "lostcancel"
+      - path: ^main\.go$
+        linters:
+          - gocheckcompilerdirectives
+        text: "go:debug"
+      - linters:
+          - govet
+        text: '^shadow: declaration of "(ctx|err|ok)" shadows declaration at line \d+$'

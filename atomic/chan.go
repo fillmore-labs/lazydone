@@ -33,19 +33,19 @@ type Chan[T any] struct {
 
 // Load atomically loads and returns the value stored in c.
 func (c *Chan[T]) Load() (ch chan T) {
-	*(*unsafe.Pointer)(unsafe.Pointer(&ch)) = atomic.LoadPointer(&c.v)
+	*unsafePointer(&ch) = atomic.LoadPointer(&c.v)
 
 	return
 }
 
 // Store atomically stores ch into c.
 func (c *Chan[T]) Store(ch chan T) {
-	atomic.StorePointer(&c.v, *(*unsafe.Pointer)(unsafe.Pointer(&ch)))
+	atomic.StorePointer(&c.v, *unsafePointer(&ch))
 }
 
 // Swap atomically stores new into c and returns the previous value.
 func (c *Chan[T]) Swap(new chan T) (old chan T) {
-	*(*unsafe.Pointer)(unsafe.Pointer(&old)) = atomic.SwapPointer(&c.v, *(*unsafe.Pointer)(unsafe.Pointer(&new)))
+	*unsafePointer(&old) = atomic.SwapPointer(&c.v, *unsafePointer(&new))
 
 	return
 }
@@ -53,5 +53,10 @@ func (c *Chan[T]) Swap(new chan T) (old chan T) {
 // CompareAndSwap executes the compare-and-swap operation for c.
 func (c *Chan[T]) CompareAndSwap(old, new chan T) (swapped bool) {
 	return atomic.CompareAndSwapPointer(&c.v,
-		*(*unsafe.Pointer)(unsafe.Pointer(&old)), *(*unsafe.Pointer)(unsafe.Pointer(&new)))
+		*unsafePointer(&old), *unsafePointer(&new))
+}
+
+// unsafePointer is a helper to make the methods more readable.
+func unsafePointer[T any](ptr *chan T) *unsafe.Pointer {
+	return (*unsafe.Pointer)(unsafe.Pointer(ptr))
 }
